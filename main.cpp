@@ -36,7 +36,9 @@ int main()
 	{
 		for(int j = 0; j < SIZE; ++j)
 		{
-			A2[i][j] = A2[i][j];
+			A2[i][j] = A[i][j];
+			U[i][j] = 0;
+			L[i][j] = 0;
 		}
 	}
 
@@ -46,23 +48,22 @@ int main()
 	for(int i = 0; i < SIZE; ++i)
 	{
 		
-		for(int j = 0; j < i; ++j)
+		for(int j = 0; j < SIZE; ++j)
 		{
 			A[i][j] = 0;
-			for(int k = 0; k < i; ++k)
+			for(int k = 0; k < SIZE; ++k)
 			{
 				A[i][j] += L[i][k]*U[k][j];
 			}
 		}
 	}
-
 	//Multiply L*U to check the answer
-	cout << "The matrix 'A2' is:" << endl;
+	cout << "The resutlting matrix is: " << endl;
 	for(int i = 0; i < SIZE; ++i)
 	{
 		for(int j = 0; j < SIZE; ++j)
 		{
-			cout << A2[i][j] << " ";
+			cout << A[i][j] << " ";
 		}
 		cout << '\n';
 	}
@@ -88,8 +89,7 @@ int main()
 
 		cout << '\n';
 	}
-
-	*/
+*/
 
 	delete *A;
 	delete *A2;
