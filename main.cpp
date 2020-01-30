@@ -5,35 +5,22 @@ using namespace std;
 
 int main()
 {
-	//Temp storage for matrix
-	int SIZE = 25;
-	float ** A = readIn(SIZE,159);
+
+	//Temp storage
+	int SIZE = 3;
+	float temp[SIZE];
+	float ** A = readIn(SIZE,9);
 	float ** L = new float*[SIZE];
 	float ** U = new float*[SIZE];
 
-	cout << "The matrix 'A' is:" << endl;
-	for(int i = 0; i < SIZE; ++i)
-	{
-		for(int j = 0; j < SIZE; ++j)
-		{
-			cout << A[i][j] << " ";
-		}
-		cout << '\n';
-	}
-
 	//Create a copy of the matrix
 	float ** A2 = new float*[SIZE];
-
-	//And initialize the L,U matrices
+	//Initialization of the matrices
 	for(int i = 0; i < SIZE; ++i)
 	{
 		U[i] = new float[SIZE];
 		L[i] = new float[SIZE];
 		A2[i] = new float[SIZE];
-	}
-	//Set the data for the matrix copy
-	for(int i = 0; i < SIZE; ++i)
-	{
 		for(int j = 0; j < SIZE; ++j)
 		{
 			A2[i][j] = A[i][j];
@@ -44,58 +31,52 @@ int main()
 
 	//This will do LU decomposition on A into an L and U.
 	LU_Factor(A2,SIZE,L,U);
-
-	for(int i = 0; i < SIZE; ++i)
+	matrix L_CSR(L,SIZE);
+	L_CSR.display();
+	matrix U_CSR(U,SIZE);
+	U_CSR.display();
+	cout << "What is x?" << '\n';
+	for(int i =0; i < SIZE; ++i)
 	{
-		
-		for(int j = 0; j < SIZE; ++j)
-		{
-			A[i][j] = 0;
-			for(int k = 0; k < SIZE; ++k)
-			{
-				A[i][j] += L[i][k]*U[k][j];
-			}
-		}
-	}
-	//Multiply L*U to check the answer
-	cout << "The resutlting matrix is: " << endl;
-	for(int i = 0; i < SIZE; ++i)
-	{
-		for(int j = 0; j < SIZE; ++j)
-		{
-			cout << A[i][j] << " ";
-		}
+		cout << "x" << i << ": ";
+		cin >> temp[i];
+		cin.ignore(100,'\n');
 		cout << '\n';
 	}
+	vector x(temp,SIZE);
+	vector b(SIZE);
+	vector y(SIZE);
+	vector ans(SIZE);
+	matrix A_CSR(A,SIZE);
 
-	/*
-	cout << "The matrix 'L' is:" << endl;
+	//Multiply the inputted x to generate b, then retrieve it with LU
+	A_CSR.times(x,b);
+
+	cout << "b = " << '\n';
+	b.display();
+
+	//Run LU factorization
+	forward(y,b,L_CSR);
+	backward(ans,y,U_CSR);
+
+	//Output the answer and what x was originally
+	cout << '\n' <<"X = ";
+	x.display();
+	cout << '\n' << "You got = ";
+	ans.display();
+
+
 	for(int i = 0; i < SIZE; ++i)
 	{
-		for(int j = 0; j < SIZE; ++j)
-		{
-			cout << L[i][j] << " ";
-		}
-		cout << '\n';
+		delete A[i];
+		delete A2[i];
+		delete L[i];
+		delete U[i];
 	}
-
-	cout << "The matrix 'U' is:" << '\n';
-	for(int i = 0; i < SIZE; ++i)
-	{
-		for(int j = 0; j < SIZE; ++j)
-		{
-			cout << U[i][j] << " ";
-		}
-
-		cout << '\n';
-	}
-*/
-
-	delete *A;
-	delete *A2;
-	delete A;
-	delete A2;
-
+	delete [] A;
+	delete [] A2;
+	delete [] L;
+	delete [] U;
 
 	return 0;
 

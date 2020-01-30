@@ -1,5 +1,7 @@
 //Implementation of LU factorization
 #include "csrMatrix.h"
+#include <iostream>
+#include <math.h>
 using namespace std;
 
 
@@ -15,7 +17,7 @@ void forward(vector & y, vector & b, matrix & L)
 		for(int k = L.rowPtr[i]; k < L.rowPtr[i+1]; ++k)
 		{
 			int j = L.columnInd[k];
-			y[i] = y[i] - L.data[k]*y[j];
+			y.data[i] = y.data[i] - L.data[k]*y[j];
 		}
 		y.data[i] = y.data[i]/L.data[L.rowPtr[i+1]-1];
 	}
@@ -34,7 +36,7 @@ void backward(vector & x, vector & y, matrix & U)
 		for(int k = U.rowPtr[i+1]; k > U.rowPtr[i-1]; --k)
 		{
 			int j = U.columnInd[k];
-			x[i] = x[i] - U.data[k]*x[j];
+			x.data[i] = x.data[i] - U.data[k]*x[j];
 		}
 		x.data[i] = x.data[i]/U.data[U.rowPtr[i+1]-1];
 	}
@@ -47,12 +49,18 @@ void backward(vector & x, vector & y, matrix & U)
 void LU_Factor(float **A, int n, float **L, float **U)
 {
 	float D[n]; //Diagonal vector represents the diagonal entries of D
-	for(int i = 0; i < n; ++i)
+	/*
+	D[1] = A[1][1];
+	L[1][1] = 1;
+	for(int i = 1; i < n; ++i)
 	{
 		//Set the diagonals of both matrices
-		L[i][i] = 1; D[i] = 1/A[i][i];
+		L[i][i] = 1; D[i] = A[i][i];
+		for(int k = 1; k < i; ++k)
+		{
+			D[i] -= L[i][k]*L[i][k]*D[k];
+		}
 		
-
 		//From here we only need the diagonals and the lower matrix
 		//as from exploiting the symmetry of A, and since it is SPD
 		//we can use LD^{-1}L^T decomposition
@@ -68,17 +76,40 @@ void LU_Factor(float **A, int n, float **L, float **U)
 			{
 				A[k][j] -= L[k][i]*A[j][i];
 			}
-
 		}
+	}
+	*/
+	
+	//ALGORITHM FROM WIKIPEDIA (Cholesky Decomposition)
+	
+	for(int i = 0; i < n; ++i)
+	{
+		//Set the diagonals of both matrices
+		L[i][i] = 1; D[i] = A[i][i];
+		for(int j = 0; j < i; ++j)
+		{
+			L[i][j] = A[i][j];
+			for(int k = 0; k < j; ++k)
+			{
+				D[j] -= L[j][k]*L[j][k]*D[k];
+				L[i][j] -=L[i][k]*L[j][k]*D[k];
+			}
+			L[i][j] /= D[j];
+		}
+
 	}
 
 	//Do the matrix multiplication to generate the upper
 	//diagonal matrix, U = D^{-1}L^T 
+	
 	for(int i = 0; i < n; ++i)
 	{
 		for(int j = i; j < n; ++j)
 		{
-			U[i][j] = L[j][i]/D[i];
+			U[i][j] = L[j][i]*D[i];
 		}
 	}
 }
+
+
+

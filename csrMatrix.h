@@ -37,7 +37,7 @@ class matrix
 		matrix(const float * dataToCopy, const int * indToCopy, const int * rowPtrToCopy, const int & rowCount, const int & columnCount, const int & NNZs);
 
 		//Initialize a CSR matrix from a non-CSR matrix stored as a 2D-array of floats
-		matrix(float ** A, int );
+		matrix(float ** A, int n);
 
 		//Deletes a matrix and all the data inside it.
 		~matrix();
@@ -63,8 +63,8 @@ class matrix
 //EXTRA FUNCTIONS
 
 //LU Functions (given the LU matrix already known)
-void forward(vector & x, vector & b, matrix & L);
-void backward(vector & x, vector & b, matrix & U);
+void forward(vector & y, vector & b, matrix & L);
+void backward(vector & x, vector & y, matrix & U);
 
 //LU Decomposition
 //INPUT:Matrix to be decomposed, number of rows/columns, two empty (nxn) matrices to be filled
